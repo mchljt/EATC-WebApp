@@ -5,7 +5,7 @@ import numpy as np
 from PIL import Image
 
 # Load trained model
-model = load_model("best_cnn_model.keras")
+model = load_model("cnn_model.h5")
 
 # Map class indices
 class_indices = {'FAKE': 0, 'REAL': 1}
