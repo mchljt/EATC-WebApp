@@ -12,8 +12,8 @@ class_indices = {'FAKE': 0, 'REAL': 1}
 labels = {v: k for k, v in class_indices.items()}
 
 # Image size (must match your model's input)
-IMG_HEIGHT = 224
-IMG_WIDTH = 224
+IMG_HEIGHT = 32
+IMG_WIDTH = 32
 
 # Streamlit UI
 st.title("🕵️‍♂️ Deepfake Image Detector")
@@ -27,6 +27,7 @@ if uploaded_file is not None:
     st.image(img, caption="Uploaded Image", use_column_width=True)
 
     # Preprocess image
+    img = img.convert('RGB')              # ensure 3 channels
     img = img.resize((IMG_WIDTH, IMG_HEIGHT))
     img_array = image.img_to_array(img)
     img_array = img_array / 255.0
