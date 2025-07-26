@@ -42,3 +42,5 @@ if uploaded_file is not None:
     st.subheader("🔍 Prediction:")
     st.write(f"**Class:** {labels[predicted_class]}")
     st.write(f"**Confidence:** {confidence * 100:.2f}%")
+    st.write(f"Raw prediction: {prediction}")
+
