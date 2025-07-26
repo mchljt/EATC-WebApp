@@ -44,4 +44,6 @@ if uploaded_file is not None:
     st.write(f"**Class:** {labels[predicted_class]}")
     st.write(f"**Confidence:** {confidence * 100:.2f}%")
     st.write(f"Raw prediction: {prediction}")
+    st.write(f"**Predicted class:** {predicted_class} | **Raw score:** {prediction:.4f} | **Mapped label:** {labels[predicted_class]}")
+
 
