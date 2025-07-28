@@ -12,8 +12,8 @@ class_indices = {'FAKE': 0, 'REAL': 1}
 labels = {v: k for k, v in class_indices.items()}
 
 # Image size (must match your model's input)
-IMG_HEIGHT = 32
-IMG_WIDTH = 32
+IMG_HEIGHT = 256
+IMG_WIDTH = 256
 
 # Streamlit UI
 st.title("🕵️‍♂️ Deepfake Image Detector")
