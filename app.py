@@ -11,7 +11,7 @@ model = load_model("cnn_model.h5")
 class_indices = {'FAKE': 0, 'REAL': 1}
 labels = {v: k for k, v in class_indices.items()}
 
-# Image size (must match your model's input)
+# Image size (matching model's input)
 IMG_HEIGHT = 256
 IMG_WIDTH = 256
 
