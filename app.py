@@ -16,6 +16,7 @@ st.set_page_config(
 )
 
 # Custom CSS for better styling
+# Custom CSS for better styling
 st.markdown("""
 <style>
     .main-header {
@@ -37,21 +38,23 @@ st.markdown("""
     }
     
     .real-result {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
         color: white;
         padding: 1rem;
         border-radius: 10px;
         text-align: center;
         margin: 1rem 0;
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
     }
     
     .fake-result {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%);
         color: white;
         padding: 1rem;
         border-radius: 10px;
         text-align: center;
         margin: 1rem 0;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
     }
     
     .confidence-bar {
