@@ -173,7 +173,7 @@ with st.container():
                 <h1 class="hero-title">🔍 AI Deepfake Detection Tool</h1>
                 <p class="hero-subtitle">Advanced Deep Learning Technology to Identify Manipulated Images</p>
                 <div class="feature-highlight">
-                    <p>✨ <strong>Trained on 140,000+ Images</strong> • 🎯 <strong>76.3% Accuracy</strong> • 🚀 <strong>Instant Results</strong></p>
+                    <p>✨ <strong>Trained on 140,000 Images</strong> • 🎯 <strong>76.3% Accuracy</strong> • 🚀 <strong>Instant Results</strong></p>
                 </div>
                 <div style="margin-top: 2rem;">
                     <span class="cta-button">🚀 Try It Now – Upload Your Image Below</span>
@@ -354,7 +354,7 @@ with col_stats1:
 with col_stats2:
     st.metric("Precision Score", "79.7%")
 with col_stats3:
-    st.metric("Trained on", "140,000+ images")
+    st.metric("Trained on", "140,000 images")
 
 # Footer
 st.markdown("---")
