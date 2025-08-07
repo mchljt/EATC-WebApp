@@ -4,6 +4,7 @@ from tensorflow.keras.preprocessing import image
 import numpy as np
 from PIL import Image
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import time
 
 # Page configuration
@@ -11,202 +12,353 @@ st.set_page_config(
     page_title="AI Deepfake Detector",
     page_icon="🕵️",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="expanded"
 )
 
-# Global Constants
-CLASS_INDICES = {"FAKE": 0, "REAL": 1}
-LABELS = {v: k for k, v in CLASS_INDICES.items()}
-IMG_SIZE = (256, 256)
-
-# css styles
-st.markdown(
-    """
+# Enhanced CSS for better styling with landing banner
+st.markdown("""
 <style>
-/* Hero banner */
-.hero {
-    background: linear-gradient(135deg,#667eea 0%,#764ba2 100%), 
-                url('https://images.unsplash.com/photo-1518709268805-4e9042af2176?auto=format&fit=crop&w=1200&q=80');
-    background-size: cover;
-    background-blend-mode: overlay;
-    color:#fff;
-    text-align:center;
-    padding:4rem 2rem;
-    border-radius:15px;
-    margin-bottom:3rem;
-}
-.hero h1{font-size:3rem;margin:0 0 1rem 0;text-shadow:2px 2px 4px rgba(0,0,0,.3);}
-.hero p{font-size:1.15rem;margin:0 0 1.5rem 0;opacity:.9;}
-
-.cta-btn{
-    display:inline-block;
-    padding:1rem 2rem;
-    background:linear-gradient(45deg,#28a745,#20c997);
-    color:#fff;font-weight:700;border-radius:50px;
-    box-shadow:0 4px 15px rgba(40,167,69,.35);
-    text-decoration:none;
-    transition:transform .2s,box-shadow .2s;
-}
-.cta-btn:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(40,167,69,.5);}
-
-/* Result cards */
-.real{background:linear-gradient(135deg,#28a745 0%,#20c997 100%);}
-.fake{background:linear-gradient(135deg,#dc3545 0%,#e74c3c 100%);}
-.result-card{
-    color:#fff;
-    padding:1rem;
-    border-radius:10px;
-    text-align:center;
-    margin:1rem 0;
-    box-shadow:0 3px 12px rgba(0,0,0,.2);
-}
-
-/* Misc */
-.conf-box{background:#f8f9fa;padding:1rem;border-radius:8px;margin:1rem 0;border-left:4px solid #667eea;}
-.upload-card{background:#fff;padding:2rem;border-radius:15px;box-shadow:0 4px 15px rgba(0,0,0,.1);border-left:5px solid #667eea;margin-top:1rem;}
+    /* Landing Banner/Hero Section */
+    .hero-banner {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%),
+                    url('https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+        background-blend-mode: overlay;
+        background-size: cover;
+        background-position: center;
+        text-align: center;
+        padding: 4rem 2rem;
+        color: white;
+        border-radius: 15px;
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-banner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(102, 126, 234, 0.8);
+        z-index: 1;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .hero-title {
+        font-size: 3rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+    
+    .cta-button {
+        background: linear-gradient(45deg, #28a745, #20c997);
+        color: white;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin: 10px;
+    }
+    
+    .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.6);
+    }
+    
+    .detection-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border-left: 5px solid #667eea;
+        margin: 1rem 0;
+    }
+    
+    .real-result {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        padding: 1rem;
+        border-radius: 10px;
+        text-align: center;
+        margin: 1rem 0;
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    }
+    
+    .fake-result {
+        background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%);
+        color: white;
+        padding: 1rem;
+        border-radius: 10px;
+        text-align: center;
+        margin: 1rem 0;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    }
+    
+    .confidence-explanation {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        border-left: 4px solid #667eea;
+    }
+    
+    .confidence-bar {
+        background: #f0f0f0;
+        border-radius: 10px;
+        padding: 5px;
+        margin: 10px 0;
+    }
+    
+    .stats-container {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+    }
+    
+    .feature-highlight {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+        backdrop-filter: blur(10px);
+    }
 </style>
-""",
-    unsafe_allow_html=True,
-)
+""", unsafe_allow_html=True)
 
-# loading the model
+# Load model with caching
 @st.cache_resource
 def load_detection_model():
     return load_model("cnn_model.h5")
 
-
+# Initialize model
 try:
-    MODEL = load_detection_model()
-    MODEL_READY = True
+    model = load_detection_model()
+    model_loaded = True
 except Exception as e:
-    MODEL_READY = False
-    st.error(f"Model load failed: {e}")
+    model_loaded = False
+    st.error(f"Error loading model: {str(e)}")
 
-# hero section
-st.markdown(
-    """
-<div class="hero">
-    <h1>🔍 AI Deepfake Detection Tool</h1>
-    <p>Advanced deep learning to spot manipulated images instantly.</p>
-    <p>✨ <strong>190 K+ training images</strong> • 🎯 <strong>76.3 % accuracy</strong></p>
-    <a class="cta-btn">🚀 Upload your image below</a>
+# Configuration
+class_indices = {'FAKE': 0, 'REAL': 1}
+labels = {v: k for k, v in class_indices.items()}
+IMG_HEIGHT = 256
+IMG_WIDTH = 256
+
+# Enhanced Landing Banner/Hero Section
+st.markdown("""
+<div class="hero-banner">
+    <div class="hero-content">
+        <h1 class="hero-title">🔍 AI Deepfake Detection Tool</h1>
+        <p class="hero-subtitle">Advanced Deep Learning Technology to Identify Manipulated Images</p>
+        
+        <div class="feature-highlight">
+            <p>✨ <strong>Trained on 190,000+ Images</strong> • 🎯 <strong>76.3% Accuracy</strong> • 🚀 <strong>Instant Results</strong></p>
+        </div>
+        
+        <div style="margin-top: 2rem;">
+            <span class="cta-button">🚀 Try It Now - Upload Your Image Below</span>
+        </div>
+    </div>
 </div>
-""",
-    unsafe_allow_html=True,
-)
+""", unsafe_allow_html=True)
 
-# sidebar stuffs
+# Sidebar
 with st.sidebar:
-    st.header("📊 About")
-    st.info(
-        "Detect potential deepfakes with a CNN trained on 190 K+ images.\n\n"
-        "Supported formats: JPG, JPEG, PNG."
+    st.markdown("### 📊 About This Tool")
+    st.info("""
+    This tool analyzes uploaded images to detect potential deepfakes, using a deeplearning model trained on over 190,000 images.
+    
+    **Supported formats:** JPG, JPEG, PNG
+    """)
+    
+    st.markdown("### 🛡️ How It Works")
+    st.write("""
+    1. Upload your image
+    2. Our AI model processes the image
+    3. Get instant detection results
+    4. View confidence metrics
+    """)
+    
+    st.markdown("### ⚠️ Disclaimer")
+    st.warning("This tool provides prediction based on AI analysis. Always verify results through multiple sources.")
+
+# Main content area
+col1, col2 = st.columns([1, 1])
+
+with col1:
+    st.markdown("### 📤 Upload Image for Analysis")
+    
+    uploaded_file = st.file_uploader(
+        "Choose an image file",
+        type=["jpg", "jpeg", "png"],
+        help="Upload a clear image for best results"
     )
-    st.header("🛡 How it works")
-    st.markdown(
-        "1. Upload an image\n"
-        "2. The model analyses visual patterns\n"
-        "3. You get a prediction & confidence score"
-    )
-    st.header("⚠️ Disclaimer")
-    st.warning("Predictions are probabilistic. Verify critical content via multiple sources.")
+    
+    if uploaded_file is not None:
+        # Display uploaded image
+        img = Image.open(uploaded_file)
+        st.image(img, caption="📷 Uploaded Image", use_column_width=True)
+        
+        # File info
+        file_details = {
+            "Filename": uploaded_file.name,
+            "File size": f"{uploaded_file.size / 1024:.1f} KB",
+            "Image dimensions": f"{img.size[0]} x {img.size[1]} pixels"
+        }
+        
+        with st.expander("📋 File Information"):
+            for key, value in file_details.items():
+                st.write(f"**{key}:** {value}")
 
-# ─────────────────── 7. MAIN CONTENT ───────────────────
-col_upload, col_result = st.columns(2)
-
-# upload 
-with col_upload:
-    st.subheader("📤 Upload Image")
-    file = st.file_uploader("Choose an image", ["jpg", "jpeg", "png"])
-    if file:
-        img = Image.open(file).convert("RGB")
-        st.image(img, caption="Uploaded image", use_column_width=True)
-        with st.expander("File details"):
-            st.write(f"**Name:** {file.name}")
-            st.write(f"**Size:** {file.size/1024:.1f} KB")
-            st.write(f"**Dimensions:** {img.width}×{img.height}px")
-
-# results
-with col_result:
-    if file and MODEL_READY:
-        st.subheader("🔬 Analysis")
-        with st.spinner("Processing..."):
-            time.sleep(0.8)  # UX pause
-            # preprocess
-            img_resized = img.resize(IMG_SIZE)
-            arr = image.img_to_array(img_resized) / 255.0
-            pred = MODEL.predict(np.expand_dims(arr, 0), verbose=0)[0][0]
-            pred_class = int(np.round(pred))
-            conf = pred if pred_class == 1 else 1 - pred
-
-        label = LABELS[pred_class]
-        card_class = "real" if label == "REAL" else "fake"
-        card_text = "✅ AUTHENTIC IMAGE" if label == "REAL" else "⚠️ POTENTIAL DEEPFAKE"
-
-        st.markdown(
-            f'<div class="result-card {card_class}"><h3>{card_text}</h3></div>',
-            unsafe_allow_html=True,
-        )
-
-        # Gauge chart
-        fig = go.Figure(
-            go.Indicator(
-                mode="gauge+number",
-                value=conf * 100,
-                gauge={
-                    "axis": {"range": [0, 100]},
-                    "bar": {"color": "#28a745" if label == "REAL" else "#dc3545"},
-                    "steps": [
-                        {"range": [0, 50], "color": "lightgray"},
-                        {"range": [50, 80], "color": "gold"},
-                        {"range": [80, 100], "color": "lightgreen"},
-                    ],
-                },
-            )
-        )
-        fig.update_layout(height=250, margin=dict(l=10, r=10, t=30, b=0))
-        st.plotly_chart(fig, use_container_width=True)
-
-        # Confidence explainer
-        st.markdown('<div class="conf-box"><h4>🧐 Confidence explained</h4></div>', unsafe_allow_html=True)
-        pct = conf * 100
-        if pct >= 90:
-            st.success(f"Very high confidence ({pct:.1f} %). Result is highly reliable.")
-        elif pct >= 80:
-            st.info(f"High confidence ({pct:.1f} %). Result is generally reliable.")
-        elif pct >= 60:
-            st.warning(f"Moderate confidence ({pct:.1f} %). Consider further checks.")
+with col2:
+    if uploaded_file is not None and model_loaded:
+        st.markdown("### 🔬 Analysis Results")
+        
+        # Processing indicator
+        with st.spinner('🧠 Analyzing your image...'):
+            time.sleep(1)  # Simulate processing time for UX
+            
+            # Preprocess image
+            img_processed = img.convert('RGB')
+            img_processed = img_processed.resize((IMG_WIDTH, IMG_HEIGHT))
+            img_array = image.img_to_array(img_processed)
+            img_array = img_array / 255.0
+            img_array = np.expand_dims(img_array, axis=0)
+            
+            # Predict
+            prediction = model.predict(img_array, verbose=0)[0][0]
+            predicted_class = int(np.round(prediction))
+            confidence = prediction if predicted_class == 1 else 1 - prediction
+            
+        # Results display
+        result_label = labels[predicted_class]
+        
+        if result_label == "REAL":
+            st.markdown(f"""
+            <div class="real-result">
+                <h3>✅ AUTHENTIC IMAGE</h3>
+                <p>This image appears to be genuine</p>
+            </div>
+            """, unsafe_allow_html=True)
         else:
-            st.error(f"Low confidence ({pct:.1f} %). Verify with other methods.")
-        st.caption("Higher scores mean clearer features matching the predicted class.")
+            st.markdown(f"""
+            <div class="fake-result">
+                <h3>⚠️ POTENTIAL DEEPFAKE</h3>
+                <p>This image may be artificially generated</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Confidence visualization
+        st.markdown("#### 📊 Confidence Analysis")
+        
+        # Create gauge chart
+        fig = go.Figure(go.Indicator(
+            mode = "gauge+number+delta",
+            value = confidence * 100,
+            domain = {'x': [0, 1], 'y': [0, 1]},
+            title = {'text': "Confidence Level (%)"},
+            delta = {'reference': 80},
+            gauge = {
+                'axis': {'range': [None, 100]},
+                'bar': {'color': "#28a745" if result_label == "REAL" else "#dc3545"},
+                'steps': [
+                    {'range': [0, 50], 'color': "lightgray"},
+                    {'range': [50, 80], 'color': "yellow"},
+                    {'range': [80, 100], 'color': "lightgreen"}
+                ],
+                'threshold': {
+                    'line': {'color': "red", 'width': 4},
+                    'thickness': 0.75,
+                    'value': 90
+                }
+            }
+        ))
+        fig.update_layout(height=300)
+        st.plotly_chart(fig, use_container_width=True)
+        
+        # Inline explanation of confidence - NEW FEATURE
+        confidence_percentage = confidence * 100
+        st.markdown("""
+        <div class="confidence-explanation">
+            <h4>🤔 What does this confidence score mean?</h4>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if confidence_percentage >= 90:
+            st.success(f"**Very High Confidence ({confidence_percentage:.1f}%):** The model is very certain about this prediction. Results above 90% are considered highly reliable.")
+        elif confidence_percentage >= 80:
+            st.info(f"**High Confidence ({confidence_percentage:.1f}%):** The model is confident about this prediction. Results between 80-90% are generally reliable.")
+        elif confidence_percentage >= 60:
+            st.warning(f"**Moderate Confidence ({confidence_percentage:.1f}%):** The model has some uncertainty. Consider additional verification for important decisions.")
+        else:
+            st.error(f"**Low Confidence ({confidence_percentage:.1f}%):** The model is uncertain about this prediction. This result should be treated with caution and verified through other means.")
+        
+        # Additional explanation
+        st.caption("💡 **Tip:** Higher confidence scores indicate the model found clearer patterns to make its decision. Lower scores suggest the image has ambiguous features.")
+        
+        # Technical details in expandable section
+        with st.expander("🔧 Technical Details"):
+            col_tech1, col_tech2 = st.columns(2)
+            with col_tech1:
+                st.metric("Raw Prediction Score", f"{prediction:.4f}")
+                st.metric("Classification Threshold", "0.5")
+            with col_tech2:
+                st.metric("Model Confidence", f"{confidence*100:.1f}%")
+                st.metric("Predicted Class Index", predicted_class)
+    
+    elif uploaded_file is not None and not model_loaded:
+        st.error("❌ Model not available. Please check the model file.")
+    else:
+        st.markdown("""
+        <div class="detection-card">
+            <h4>🎯 Ready for Analysis</h4>
+            <p>Upload an image to begin deepfake detection analysis.</p>
+            <ul>
+                <li>Supports JPG, JPEG, and PNG formats</li>
+                <li>Optimal image size: 256x256 pixels</li>
+                <li>Clear, well-lit images work best</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
 
-    elif file and not MODEL_READY:
-        st.error("Model unavailable – please try again later.")
-    elif not file:
-        st.markdown(
-            """
-<div class="upload-card">
-    <h4>Ready for analysis</h4>
-    <p>Upload an image to begin deepfake detection.</p>
-</div>
-""",
-            unsafe_allow_html=True,
-        )
-
-# stats 
+# Additional features section
 st.markdown("---")
-stats1, stats2, stats3 = st.columns(3)
-stats1.metric("Model accuracy", "76.3 %")
-stats2.metric("Precision", "79.7 %")
-stats3.metric("Training images", "190 K+")
+st.markdown("### 📈 Model Performance Statistics")
 
+col_stats1, col_stats2, col_stats3 = st.columns(3)
+
+with col_stats1:
+    st.metric("Model Accuracy", "76.3%")
+with col_stats2:
+    st.metric("Precision Score", "79.7%")
+with col_stats3:
+    st.metric("Trained on", "190,000+ images")
+
+# Footer
 st.markdown("---")
-st.markdown(
-    """
-<div style="text-align:center;color:#666;padding:1.5rem 0;">
-    🔒 Images are processed in-memory and never stored.<br>
-    Built for the EATC deep learning assignment.
+st.markdown("""
+<div style="text-align: center; color: #666; padding: 2rem;">
+    <p>🔒 Your images will not be stored on our servers.</p>
+    <p>Built with Deeplearning for EATC Assignment.</p>
 </div>
-""",
-    unsafe_allow_html=True,
-)
+""", unsafe_allow_html=True)
