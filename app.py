@@ -243,7 +243,7 @@ with col2:
 st.markdown("---")
 st.markdown("### 📈 Model Performance Statistics")
 
-col_stats1, col_stats2, col_stats3 = st.columns(2)
+col_stats1, col_stats2, col_stats3 = st.columns(3)
 
 with col_stats1:
     st.metric("Model Accuracy", "76.3%")
