@@ -165,22 +165,24 @@ IMG_HEIGHT = 256
 IMG_WIDTH = 256
 
 # Enhanced Landing Banner/Hero Section
-st.markdown("""
-<div class="hero-banner">
-    <div class="hero-content">
-        <h1 class="hero-title">🔍 AI Deepfake Detection Tool</h1>
-        <p class="hero-subtitle">Advanced Deep Learning Technology to Identify Manipulated Images</p>
-        
-        <div class="feature-highlight">
-            <p>✨ <strong>Trained on 190,000+ Images</strong> • 🎯 <strong>76.3% Accuracy</strong> • 🚀 <strong>Instant Results</strong></p>
+with st.container():
+    st.markdown(
+        """
+        <div class="hero-banner">
+            <div class="hero-content">
+                <h1 class="hero-title">🔍 AI Deepfake Detection Tool</h1>
+                <p class="hero-subtitle">Advanced Deep Learning Technology to Identify Manipulated Images</p>
+                <div class="feature-highlight">
+                    <p>✨ <strong>Trained on 190,000+ Images</strong> • 🎯 <strong>76.3% Accuracy</strong> • 🚀 <strong>Instant Results</strong></p>
+                </div>
+                <div style="margin-top: 2rem;">
+                    <span class="cta-button">🚀 Try It Now – Upload Your Image Below</span>
+                </div>
+            </div>
         </div>
-        
-        <div style="margin-top: 2rem;">
-            <span class="cta-button">🚀 Try It Now - Upload Your Image Below</span>
-        </div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+        """,
+        unsafe_allow_html=True,
+    )
 
 # Sidebar
 with st.sidebar:
