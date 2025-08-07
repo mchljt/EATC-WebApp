@@ -92,8 +92,8 @@ IMG_WIDTH = 256
 # Header
 st.markdown("""
 <div class="main-header">
-    <h1>🔍 AI-Powered Deepfake Detection Tool</h1>
-    <p>Advanced machine learning technology to identify manipulated images</p>
+    <h1>🔍 EATC AI-Powered Deepfake Detection Tool</h1>
+    <p>Advanced Deep learning technology to identify manipulated images</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -101,23 +101,21 @@ st.markdown("""
 with st.sidebar:
     st.markdown("### 📊 About This Tool")
     st.info("""
-    This AI model analyzes uploaded images to detect potential deepfakes using advanced computer vision techniques.
+    This tool analyzes uploaded images to detect potential deepfakes, using a deeplearning model trained on over 190,000 images.
     
     **Supported formats:** JPG, JPEG, PNG
-    
-    **Accuracy:** ~95% on test data
     """)
     
     st.markdown("### 🛡️ How It Works")
     st.write("""
     1. Upload your image
-    2. AI processes the visual patterns
+    2. Our AI model processes the image
     3. Get instant detection results
     4. View confidence metrics
     """)
     
     st.markdown("### ⚠️ Disclaimer")
-    st.warning("This tool provides estimates based on AI analysis. Always verify important content through multiple sources.")
+    st.warning("This tool provides prediction based on AI analysis. Always verify results through multiple sources.")
 
 # Main content area
 col1, col2 = st.columns([1, 1])
@@ -152,7 +150,7 @@ with col2:
         st.markdown("### 🔬 Analysis Results")
         
         # Processing indicator
-        with st.spinner('🧠 AI is analyzing your image...'):
+        with st.spinner('🧠 Analyzing your image...'):
             time.sleep(1)  # Simulate processing time for UX
             
             # Preprocess image
@@ -242,22 +240,18 @@ with col2:
 st.markdown("---")
 st.markdown("### 📈 Model Performance Statistics")
 
-col_stats1, col_stats2, col_stats3, col_stats4 = st.columns(4)
+col_stats1, col_stats2 = st.columns(2)
 
 with col_stats1:
-    st.metric("Model Accuracy", "94.2%", "2.1%")
+    st.metric("Model Accuracy", "76.3%")
 with col_stats2:
-    st.metric("Images Processed", "15,847", "1,203")
-with col_stats3:
-    st.metric("Detection Speed", "1.2s", "-0.3s")
-with col_stats4:
-    st.metric("Precision Score", "93.8%", "1.8%")
+    st.metric("Precision Score", "79.7%")
 
 # Footer
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; color: #666; padding: 2rem;">
-    <p>🔒 Your images are processed locally and not stored on our servers.</p>
-    <p>Built with advanced AI technology for cybersecurity research and education.</p>
+    <p>🔒 Your images will not be stored on our servers.</p>
+    <p>Built with Deeplearning for EATC Assignment.</p>
 </div>
 """, unsafe_allow_html=True)
