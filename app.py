@@ -15,17 +15,73 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better styling
-# Custom CSS for better styling
+# Enhanced CSS for better styling with landing banner
 st.markdown("""
 <style>
-    .main-header {
+    /* Landing Banner/Hero Section */
+    .hero-banner {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%),
+                    url('https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+        background-blend-mode: overlay;
+        background-size: cover;
+        background-position: center;
         text-align: center;
-        padding: 2rem 0;
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        padding: 4rem 2rem;
         color: white;
-        border-radius: 10px;
+        border-radius: 15px;
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-banner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(102, 126, 234, 0.8);
+        z-index: 1;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .hero-title {
+        font-size: 3rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
         margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+    
+    .cta-button {
+        background: linear-gradient(45deg, #28a745, #20c997);
+        color: white;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin: 10px;
+    }
+    
+    .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.6);
     }
     
     .detection-card {
@@ -57,6 +113,14 @@ st.markdown("""
         box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
     }
     
+    .confidence-explanation {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        border-left: 4px solid #667eea;
+    }
+    
     .confidence-bar {
         background: #f0f0f0;
         border-radius: 10px;
@@ -69,6 +133,14 @@ st.markdown("""
         padding: 1.5rem;
         border-radius: 10px;
         margin: 1rem 0;
+    }
+    
+    .feature-highlight {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+        backdrop-filter: blur(10px);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -92,11 +164,21 @@ labels = {v: k for k, v in class_indices.items()}
 IMG_HEIGHT = 256
 IMG_WIDTH = 256
 
-# Header
+# Enhanced Landing Banner/Hero Section
 st.markdown("""
-<div class="main-header">
-    <h1>🔍 EATC AI-Powered Deepfake Detection Tool</h1>
-    <p>Advanced Deep learning technology to identify manipulated images</p>
+<div class="hero-banner">
+    <div class="hero-content">
+        <h1 class="hero-title">🔍 AI Deepfake Detection Tool</h1>
+        <p class="hero-subtitle">Advanced Deep Learning Technology to Identify Manipulated Images</p>
+        
+        <div class="feature-highlight">
+            <p>✨ <strong>Trained on 190,000+ Images</strong> • 🎯 <strong>76.3% Accuracy</strong> • 🚀 <strong>Instant Results</strong></p>
+        </div>
+        
+        <div style="margin-top: 2rem;">
+            <span class="cta-button">🚀 Try It Now - Upload Your Image Below</span>
+        </div>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -198,7 +280,7 @@ with col2:
             delta = {'reference': 80},
             gauge = {
                 'axis': {'range': [None, 100]},
-                'bar': {'color': "#667eea" if result_label == "REAL" else "#f5576c"},
+                'bar': {'color': "#28a745" if result_label == "REAL" else "#dc3545"},
                 'steps': [
                     {'range': [0, 50], 'color': "lightgray"},
                     {'range': [50, 80], 'color': "yellow"},
@@ -213,6 +295,26 @@ with col2:
         ))
         fig.update_layout(height=300)
         st.plotly_chart(fig, use_container_width=True)
+        
+        # Inline explanation of confidence - NEW FEATURE
+        confidence_percentage = confidence * 100
+        st.markdown("""
+        <div class="confidence-explanation">
+            <h4>🤔 What does this confidence score mean?</h4>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if confidence_percentage >= 90:
+            st.success(f"**Very High Confidence ({confidence_percentage:.1f}%):** The model is very certain about this prediction. Results above 90% are considered highly reliable.")
+        elif confidence_percentage >= 80:
+            st.info(f"**High Confidence ({confidence_percentage:.1f}%):** The model is confident about this prediction. Results between 80-90% are generally reliable.")
+        elif confidence_percentage >= 60:
+            st.warning(f"**Moderate Confidence ({confidence_percentage:.1f}%):** The model has some uncertainty. Consider additional verification for important decisions.")
+        else:
+            st.error(f"**Low Confidence ({confidence_percentage:.1f}%):** The model is uncertain about this prediction. This result should be treated with caution and verified through other means.")
+        
+        # Additional explanation
+        st.caption("💡 **Tip:** Higher confidence scores indicate the model found clearer patterns to make its decision. Lower scores suggest the image has ambiguous features.")
         
         # Technical details in expandable section
         with st.expander("🔧 Technical Details"):
