@@ -243,12 +243,14 @@ with col2:
 st.markdown("---")
 st.markdown("### 📈 Model Performance Statistics")
 
-col_stats1, col_stats2 = st.columns(2)
+col_stats1, col_stats2, col_stats3 = st.columns(2)
 
 with col_stats1:
     st.metric("Model Accuracy", "76.3%")
 with col_stats2:
     st.metric("Precision Score", "79.7%")
+with col_stats3:
+    st.metric("Trained on", "190,000+ images")
 
 # Footer
 st.markdown("---")
