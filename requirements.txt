@@ -1,4 +1,5 @@
-tensorflow
-numpy
-pillow
 streamlit
+tensorflow
+pillow
+numpy
+plotly
