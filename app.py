@@ -171,7 +171,7 @@ labels = {v: k for k, v in class_indices.items()}
 IMG_HEIGHT = 256
 IMG_WIDTH = 256
 
-# Enhanced Landing Banner/Hero Section
+# hero section
 with st.container():
     st.markdown(
         """
@@ -245,7 +245,7 @@ with col2:
         
         # Processing indicator
         with st.spinner('🧠 Analyzing your image...'):
-            time.sleep(1)  # Simulate processing time for UX
+            time.sleep(1)
             
             # Preprocess image
             img_processed = img.convert('RGB')
