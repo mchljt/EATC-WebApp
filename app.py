@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import time
 
-# Page configuration
+# Page basic configuration
 st.set_page_config(
     page_title="AI Deepfake Detector",
     page_icon="🕵️",
@@ -15,7 +15,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Enhanced CSS for better styling with landing banner
+# css stuff
 st.markdown("""
 <style>
     /* Landing Banner/Hero Section */
@@ -142,6 +142,13 @@ st.markdown("""
         margin: 1rem 0;
         backdrop-filter: blur(10px);
     }
+            
+    .detection-card,
+    .confidence-explanation{
+        background:#f8f9fa;
+        background-color: var(--secondary-background-color, #262730);
+        color: var(--text-color, #fafafa);
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -184,7 +191,7 @@ with st.container():
         unsafe_allow_html=True,
     )
 
-# Sidebar
+# Sidebar for explaining the tool
 with st.sidebar:
     st.markdown("### 📊 About This Tool")
     st.info("""
@@ -204,7 +211,7 @@ with st.sidebar:
     st.markdown("### ⚠️ Disclaimer")
     st.warning("This tool provides prediction based on AI analysis. Always verify results through multiple sources.")
 
-# Main content area
+# Main content area (uploading image, analysis results)
 col1, col2 = st.columns([1, 1])
 
 with col1:
@@ -298,7 +305,7 @@ with col2:
         fig.update_layout(height=300)
         st.plotly_chart(fig, use_container_width=True)
         
-        # Inline explanation of confidence - NEW FEATURE
+        # Inline explanation of confidence
         confidence_percentage = confidence * 100
         st.markdown("""
         <div class="confidence-explanation">
