@@ -180,7 +180,7 @@ with st.container():
                 <h1 class="hero-title">🔍 AI Deepfake Detection Tool</h1>
                 <p class="hero-subtitle">Advanced Deep Learning Technology to Identify Manipulated Images</p>
                 <div class="feature-highlight">
-                    <p>✨ <strong>Trained on 140,000 Images</strong> • 🎯 <strong>76.3% Accuracy</strong> • 🚀 <strong>Instant Results</strong></p>
+                    <p>✨ <strong>Trained on 140,000 Images</strong> • 🚀 <strong>Instant Results</strong></p>
                 </div>
                 <div style="margin-top: 2rem;">
                     <span class="cta-button">🚀 Try It Now – Upload Your Image Below</span>
@@ -195,7 +195,7 @@ with st.container():
 with st.sidebar:
     st.markdown("### 📊 About This Tool")
     st.info("""
-    This tool analyzes uploaded images to detect potential deepfakes, using a deeplearning model trained on over 140,000 images.
+    This tool analyzes uploaded images to detect potential deepfakes, using a deeplearning model trained on 140,000 images.
     
     **Supported formats:** JPG, JPEG, PNG
     """)
@@ -295,11 +295,6 @@ with col2:
                     {'range': [50, 80], 'color': "yellow"},
                     {'range': [80, 100], 'color': "lightgreen"}
                 ],
-                'threshold': {
-                    'line': {'color': "red", 'width': 4},
-                    'thickness': 0.75,
-                    'value': 90
-                }
             }
         ))
         fig.update_layout(height=300)
@@ -349,19 +344,6 @@ with col2:
             </ul>
         </div>
         """, unsafe_allow_html=True)
-
-# Additional features section
-st.markdown("---")
-st.markdown("### 📈 Model Performance Statistics")
-
-col_stats1, col_stats2, col_stats3 = st.columns(3)
-
-with col_stats1:
-    st.metric("Model Accuracy", "76.3%")
-with col_stats2:
-    st.metric("Precision Score", "79.7%")
-with col_stats3:
-    st.metric("Trained on", "140,000 images")
 
 # Footer
 st.markdown("---")
