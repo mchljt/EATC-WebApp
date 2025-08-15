@@ -157,7 +157,7 @@ st.markdown("""
 def load_detection_model():
     return load_model("cnn_model.h5")
 
-# Initialize model
+# Initialize cached model 
 try:
     model = load_detection_model()
     model_loaded = True
@@ -165,13 +165,13 @@ except Exception as e:
     model_loaded = False
     st.error(f"Error loading model: {str(e)}")
 
-# Configuration
+# Configuration, define class indices and labels
 class_indices = {'FAKE': 0, 'REAL': 1}
 labels = {v: k for k, v in class_indices.items()}
 IMG_HEIGHT = 256
 IMG_WIDTH = 256
 
-# hero section
+# hero section to introduce tool
 with st.container():
     st.markdown(
         """
@@ -191,7 +191,7 @@ with st.container():
         unsafe_allow_html=True,
     )
 
-# Sidebar for explaining the tool
+# Sidebar for explaining the tool, including disclaimer
 with st.sidebar:
     st.markdown("### 📊 About This Tool")
     st.info("""
@@ -224,17 +224,18 @@ with col1:
     )
     
     if uploaded_file is not None:
-        # Display uploaded image
+        # Display uploaded image for preview
         img = Image.open(uploaded_file)
         st.image(img, caption="📷 Uploaded Image", use_column_width=True)
         
-        # File info
+        # File info in dropdown
         file_details = {
             "Filename": uploaded_file.name,
             "File size": f"{uploaded_file.size / 1024:.1f} KB",
             "Image dimensions": f"{img.size[0]} x {img.size[1]} pixels"
         }
         
+        # dropdown
         with st.expander("📋 File Information"):
             for key, value in file_details.items():
                 st.write(f"**{key}:** {value}")
@@ -243,18 +244,18 @@ with col2:
     if uploaded_file is not None and model_loaded:
         st.markdown("### 🔬 Analysis Results")
         
-        # Processing indicator
+        # Processing indicator, 1 sec delay for loading simulation
         with st.spinner('🧠 Analyzing your image...'):
             time.sleep(1)
             
-            # Preprocess image
+            # Preprocess image, resize and normalize
             img_processed = img.convert('RGB')
             img_processed = img_processed.resize((IMG_WIDTH, IMG_HEIGHT))
             img_array = image.img_to_array(img_processed)
             img_array = img_array / 255.0
             img_array = np.expand_dims(img_array, axis=0)
             
-            # Predict
+            # Predict the class
             prediction = model.predict(img_array, verbose=0)[0][0]
             predicted_class = int(np.round(prediction))
             confidence = prediction if predicted_class == 1 else 1 - prediction
@@ -280,7 +281,7 @@ with col2:
         # Confidence visualization
         st.markdown("#### 📊 Confidence Analysis")
         
-        # Create gauge chart
+        # Create gauge chart with Plotly, 0-50 gray, 50-80 yellow, 80-100 green
         fig = go.Figure(go.Indicator(
             mode = "gauge+number+delta",
             value = confidence * 100,
@@ -300,7 +301,7 @@ with col2:
         fig.update_layout(height=300)
         st.plotly_chart(fig, use_container_width=True)
         
-        # Inline explanation of confidence
+        # Inline explanation of confidence for users to understand confidence score
         confidence_percentage = confidence * 100
         st.markdown("""
         <div class="confidence-explanation">
@@ -320,7 +321,7 @@ with col2:
         # Additional explanation
         st.caption("💡 **Tip:** Higher confidence scores indicate the model found clearer patterns to make its decision. Lower scores suggest the image has ambiguous features.")
         
-        # Technical details in expandable section
+        # Technical details in expandable section, eg. raw pred score
         with st.expander("🔧 Technical Details"):
             col_tech1, col_tech2 = st.columns(2)
             with col_tech1:
@@ -333,6 +334,7 @@ with col2:
     elif uploaded_file is not None and not model_loaded:
         st.error("❌ Model not available. Please check the model file.")
     else:
+        # Recommendation of image size and type
         st.markdown("""
         <div class="detection-card">
             <h4>🎯 Ready for Analysis</h4>
@@ -345,7 +347,7 @@ with col2:
         </div>
         """, unsafe_allow_html=True)
 
-# Footer
+# Footer for additional information
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; color: #666; padding: 2rem;">
